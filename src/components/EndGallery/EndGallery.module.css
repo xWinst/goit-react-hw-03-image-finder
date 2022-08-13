@@ -1,0 +1,13 @@
+.container {
+  padding: 8px 16px;
+  height: 50px;
+  margin: 20px auto;
+  font-size: 24px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  /* border-width: 0; */
+  border-radius: 5px;
+  background-color: #360988;
+  color: #dfac14;
+}
