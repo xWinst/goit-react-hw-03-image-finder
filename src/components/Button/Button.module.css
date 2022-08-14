@@ -10,6 +10,12 @@
   background-color: #360988;
   color: #dfac14;
 }
+.noResults {
+  composes: container;
+  margin-top: 110px;
+  background-color: #6f0988;
+  color: #d6bd72;
+}
 
 .button {
   composes: container;

@@ -8,7 +8,7 @@ class Delivery {
 
   constructor() {
     this.page = 1;
-    this.per_page = 4;
+    this.per_page = 12;
   }
 
   set query(newQuery) {

@@ -1,53 +1,67 @@
 import React from 'react';
-import { Searchbar, ImageGallery, Button } from '../components';
+import { Searchbar, ImageGallery, Button, Modal } from '../components';
 import delivery from '../js/delivery';
 
 export class App extends React.Component {
-  state = {
-    query: '',
-    images: [],
-    status: '',
-  };
+    state = {
+        images: [],
+        status: '',
+        isModalShow: false,
+        modalUrl: '',
+    };
 
-  count = 0; ////////////////
-
-  handleSubmit = event => {
-    event.preventDefault();
-    if (delivery.query !== event.target[1].value.trim()) {
-      delivery.query = event.target[1].value.trim();
-      this.renderGallery();
-    }
-  };
-
-  renderGallery = async () => {
-    let data = {};
-    if (delivery.page === 1) {
-      this.setState({ status: 'newSearch' });
-      this.setState({ images: [] });
-    } else this.setState({ status: 'loading' });
-    try {
-      data = await delivery.fetch();
-      console.log('this.data: ', data); ////////////////
-    } catch (error) {
-      console.log('error: ', error);
+    componentDidUpdate(prevProps, prevState) {
+        if (delivery.page > 2 && prevState.images !== this.state.images)
+            window.scrollBy({
+                top: window.innerHeight - 245,
+                behavior: 'smooth',
+            });
     }
 
-    this.setState(prevState => ({
-      images: [...prevState.images, ...data.hits],
-      status: data.isEnd ? 'endGallery' : 'endLoading',
-    }));
-    !data.total && this.setState({ status: 'noImages' });
-  };
+    handleSubmit = event => {
+        event.preventDefault();
+        if (delivery.query !== event.target[1].value.trim()) {
+            delivery.query = event.target[1].value.trim();
+            this.renderGallery();
+        }
+    };
 
-  render() {
-    console.log('render App #', ++this.count); ////
+    renderGallery = async () => {
+        if (delivery.page === 1) {
+            this.setState({ status: 'newSearch', images: [] });
+        } else this.setState({ status: 'loading' });
+        try {
+            const data = await delivery.fetch();
+            this.setState(prevState => ({
+                images: [...prevState.images, ...data.hits],
+                status: data.isEnd ? 'endGallery' : 'endLoading',
+            }));
+            !data.total && this.setState({ status: 'noImages' });
+        } catch (error) {
+            console.log('error: ', error);
+        }
+    };
 
-    return (
-      <div className="app">
-        <Searchbar onSubmit={this.handleSubmit} status={this.state.status} />
-        <ImageGallery images={this.state.images} />
-        <Button onClick={this.renderGallery} status={this.state.status} />
-      </div>
-    );
-  }
+    toggleModal = (url = '') => {
+        this.setState(prevState => ({
+            isModalShow: !prevState.isModalShow,
+            modalUrl: url,
+        }));
+    };
+
+    render() {
+        const { images, status, isModalShow, modalUrl } = this.state;
+        return (
+            <div className="app">
+                <Searchbar onSubmit={this.handleSubmit} status={status} />
+                <ImageGallery images={images} onClick={this.toggleModal} />
+                <Button onClick={this.renderGallery} status={status} />
+                {isModalShow && (
+                    <Modal onClose={this.toggleModal}>
+                        <img src={modalUrl} alt={modalUrl} />
+                    </Modal>
+                )}
+            </div>
+        );
+    }
 }
