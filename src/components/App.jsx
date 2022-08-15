@@ -23,6 +23,7 @@ export class App extends React.Component {
         if (delivery.query !== event.target[1].value.trim()) {
             delivery.query = event.target[1].value.trim();
             this.renderGallery();
+            event.target[1].value = '';
         }
     };
 
